@@ -1,0 +1,293 @@
+require 'bigdecimal'
+
+##
+# Used to work with financial calculations. Tries to avoid the pitfalls of
+# using Float by storing the value in cents. All calculations are floored.
+class Money
+
+  class << self
+
+    ##
+    # The valid values for :as
+    VALID_AS_VALUES = [:cents, :decimal]
+
+    ##
+    # The valid values for :rounding_method
+    VALID_ROUNDING_METHOD_VALUES = [:away_from_zero, :toward_zero,
+      :nearest_up, :nearest_down, :bankers, :up, :down]
+
+    ##
+    # Translations from SimpleMoney rounding methods to BigDecimal rounding
+    # method.
+    ROUNDING_METHOD_TRANSLATION = {
+      :away_from_zero => BigDecimal::ROUND_UP,
+      :toward_zero    => BigDecimal::ROUND_DOWN,
+      :nearest_up     => BigDecimal::ROUND_HALF_UP,
+      :nearest_down   => BigDecimal::ROUND_HALF_DOWN,
+      :bankers        => BigDecimal::ROUND_HALF_EVEN,
+      :up             => BigDecimal::ROUND_CEILING,
+      :down           => BigDecimal::ROUND_FLOOR,
+    }
+
+    ##
+    # @return [Symbol] The default :as used to create a new Money (defaults to
+    #  :cents).
+    attr_reader :default_as
+
+    ##
+    # Set the default :as used to create a new Money.
+    #
+    # @param [Symbol] as The default to use.
+    #
+    # @return [Symbol]
+    #
+    # @raise [ArgumentError] Will raise an ArgumentError unless as is valid.
+    #
+    # @example
+    #  Money.default_as = :cents   #=> :cents
+    #  Money.default_as = :decimal #=> :decimal
+    def default_as=(as)
+      raise ArgumentError, "invalid `as`" unless (
+        valid_as? as
+      )
+      @default_as = as
+    end
+
+    ##
+    # Returns true if argument is a valid value for :as, otherwise false.
+    #
+    # @param [Symbol] as The value to check.
+    #
+    # @return [true,false]
+    #
+    # @example
+    #   Money.valid_as? :cents #=> True
+    #   Money.valid_as? :foo   #=> False
+    def valid_as?(as)
+      VALID_AS_VALUES.include? as
+    end
+
+    ##
+    # @return [Symbol] The default :rounding_method used when calculations do
+    #  not result in an Integer (defaults to :bankers).
+    attr_reader :default_rounding_method
+
+    ##
+    # Set the default :rounding_method used when calculations do not result in
+    # and Integer.
+    #
+    # @param [Symbol] rounding_method The default to use.
+    #
+    # @return [Symbol]
+    #
+    # @raise [ArgumentError] Will raise an ArgumentError unless rounding_method
+    #  is valid.
+    #
+    # @example
+    #  Money.default_rounding_method = :up   #=> :up
+    #  Money.default_rounding_method = :down #=> :down
+    def default_rounding_method=(rounding_method)
+      raise ArgumentError, "invalid `rounding_method`" unless (
+        valid_rounding_method? rounding_method
+      )
+      @default_rounding_method = rounding_method
+    end
+
+    ##
+    # Returns true if argument is a valid value for :rounding_method, otherwise
+    # false.
+    #
+    # @param [Symbol] rounding_method The value to check.
+    #
+    # @return [true,false]
+    #
+    # @example
+    #   Money.valid_rounding_method? :up    #=> True
+    #   Money.valid_rounding_method? :foo   #=> False
+    def valid_rounding_method?(rounding_method)
+      VALID_ROUNDING_METHOD_VALUES.include? rounding_method
+    end
+
+    ##
+    # @return [BigDecimal] The factional cents left over from any transactions
+    #  that were rounded.
+    attr_reader :overflow
+
+    ##
+    # Resets the overflow bucket to 0.
+    #
+    # @return [BigDecimal]
+    def reset_overflow
+      @overflow = BigDecimal("0")
+    end
+
+    ##
+    # Returns n rounded to an integer using the given rounding method, or the
+    # default rounding method when none is provided. When rounding, the
+    # fractional cents are added to Money.overflow.
+    #
+    # @param [#to_s] n The value to round.
+    # @param [Symbol] rounding_method The rounding method to use.
+    #
+    # @return [Fixnum]
+    #
+    # @raise [ArgumentError] Will raise an argument error if an invalid
+    #  rounding method is given.
+    #
+    # @example
+    #   Money.round(1.5, :bankers) #=> 2
+    def round(n, rounding_method = default_rounding_method)
+      raise ArgumentError, "invalid `rounding_method`" unless (
+        valid_rounding_method? rounding_method
+      )
+
+      original = BigDecimal(n.to_s)
+      rounded  = original.round(
+        0,
+        ROUNDING_METHOD_TRANSLATION[rounding_method]
+      )
+      @overflow += original - rounded
+      rounded.to_i
+    end
+
+  end
+  @default_as = :cents
+  @default_rounding_method = :bankers
+  @overflow = BigDecimal("0")
+
+  ##
+  # @return [Integer] The value of the object in cents.
+  attr_reader :cents
+
+  ##
+  # @return [Symbol] The rounding method used when calculations result in
+  # fractions of a cent.
+  attr_reader :rounding_method
+
+  ##
+  # Creates a new Money. If :as is set to :cents, n will be coerced to an
+  # Integer. If :as is set to :decimal, n will be coerced to a BigDecimal.
+  #
+  # @param [#to_s] n Value of the new object.
+  # @param [Hash] options options used to build the new object.
+  # @option options [Symbol] :as How n is represented (defaults to
+  #  self.class.default_as). Valid values are :cents and :decimal.
+  # @option options [Symbol] :rounding_method How any calculations resulting in
+  #  fractions of a cent should be rounded.
+  #
+  # @raise [ArgumentError] Will raise an ArgumentError if :as is not valid.
+  #
+  # @example
+  #   Money.new                        #=> #<Money:... @cents: 0>
+  #   Money.new(1)                     #=> #<Money:... @cents: 1>
+  #   Money.new(1_00)                  #=> #<Money:... @cents: 100>
+  #   Money.new(1_00, :as => :cents)   #=> #<Money:... @cents: 100>
+  #   Money.new(1_00, :as => :decimal) #=> #<Money:... @cents: 10000>
+  #   Money.new(1.99, :as => :cents)   #=> #<Money:... @cents: 1>
+  #   Money.new(1.99, :as => :decimal) #=> #<Money:... @cents: 199>
+  def initialize(n = 0, options = {})
+    options = {
+      :rounding_method => self.class.default_rounding_method,
+      :as => self.class.default_as
+    }.merge(options)
+
+    raise ArgumentError, "invalid `rounding_method`" unless (
+      self.class.valid_rounding_method? options[:rounding_method]
+    )
+    @rounding_method = options[:rounding_method]
+
+    raise ArgumentError, "invalid `as`" unless (
+      self.class.valid_as? options[:as]
+    )
+
+    @cents = case options[:as]
+             when :cents
+               Money.round(BigDecimal(n.to_s), rounding_method)
+             when :decimal
+               Money.round(BigDecimal(n.to_s) * 100, rounding_method)
+             end
+  end
+
+  ##
+  # Add two Money objects; return the results as a new Money.
+  #
+  # @param [Money] n The object to add.
+  #
+  # @return [Money]
+  #
+  # @raise [ArgumentError] Will raise an ArgumentError unless n is a Money.
+  #
+  # @example
+  #   Money.new(1) + Money.new(2) #=> #<Money:... @cents: 3>
+  def +(n)
+    raise ArgumentError, "n must be a Money" unless n.is_a? Money
+    Money.new(self.cents + n.cents, :as => :cents)
+  end
+
+  ##
+  # Subtract two Money; return the results as a new Money.
+  #
+  # @param [Money] n The object to subtract.
+  #
+  # @return [Money]
+  #
+  # @raise [ArgumentError] Will raise an ArgumentError unless n is a Money.
+  #
+  # @example
+  #   Money.new(2) - Money.new(1) #=> #<Money:... @cents: 1>
+  def -(n)
+    raise ArgumentError, "n must be a Money" unless n.is_a? Money
+    Money.new(self.cents - n.cents, :as => :cents)
+  end
+
+  ##
+  # Multiply Money by a Numeric; return the results as a new Money.
+  #
+  # @param [Numeric] n The object to multiply. n will be coerced to a
+  #  BigDecimal before any calculations are done.
+  #
+  # @return [Money]
+  #
+  # @raise [ArgumentError] Will raise an ArgumentError unless n is a Numeric.
+  #
+  # @example
+  #   Money.new(2) * 2 #=> #<Money:... @cents: 4>
+  def *(n)
+    raise ArgumentError, "n must be a Numeric" unless n.is_a? Numeric
+
+    Money.new(
+      Money.round(self.cents * BigDecimal(n.to_s), rounding_method),
+      :as => :cents
+    )
+  end
+
+  ##
+  # Divide Money by a Money/Numeric; return the results as a new
+  #  Numeric/Money.
+  #
+  # @param [Money,Numeric] n The object to divide. If n is Numeric, it will be
+  #  coerced to a BigDecimal before any calculations are done.
+  #
+  # @return [Numeric,Money]
+  #
+  # @raise [ArgumentError] Will raise an ArgumentError unless n is a Money or
+  #  Numeric.
+  #
+  # @example
+  #   Money.new(10) / Money.new(5) #=> 2
+  #   Money.new(10) /              #=> #<Money:... @cents: 2>
+  def /(n)
+    case n
+    when Money
+      BigDecimal(self.cents.to_s) / BigDecimal(n.cents.to_s)
+    when Numeric
+      Money.new(
+        Money.round(self.cents / BigDecimal(n.to_s), rounding_method),
+        :as => :cents
+      )
+    else
+      raise ArgumentError, "n must be a Money or Numeric"
+    end
+  end
+
+end

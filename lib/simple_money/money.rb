@@ -255,10 +255,7 @@ class Money
   def *(n)
     raise ArgumentError, "n must be a Numeric" unless n.is_a? Numeric
 
-    Money.new(
-      Money.round(self.cents * BigDecimal(n.to_s), rounding_method),
-      :as => :cents
-    )
+    Money.new(self.cents * BigDecimal(n.to_s), :as => :cents)
   end
 
   ##
@@ -281,10 +278,7 @@ class Money
     when Money
       BigDecimal(self.cents.to_s) / BigDecimal(n.cents.to_s)
     when Numeric
-      Money.new(
-        Money.round(self.cents / BigDecimal(n.to_s), rounding_method),
-        :as => :cents
-      )
+      Money.new(self.cents / BigDecimal(n.to_s), :as => :cents)
     else
       raise ArgumentError, "n must be a Money or Numeric"
     end

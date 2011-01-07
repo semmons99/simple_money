@@ -17,6 +17,11 @@ Usage:
     b.to_s                  #=> "100"
     b.to_s(:as => :decimal) #=> "1.00"
 
+Version History
+---------------
+
+See {file:CHANGELOG.md} for details.
+
 Copyright
 ---------
 

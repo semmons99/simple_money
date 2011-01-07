@@ -346,4 +346,38 @@ describe "Money" do
     end
   end
 
+  describe "#to_s" do
+
+    it "should return cents formatted as a string" do
+      Money.new(1_00).to_s.should == "100"
+    end
+
+    context "with :as => :cents" do
+
+      it "should return cents formatted as a string" do
+        Money.new(1_00).to_s.should == "100"
+      end
+
+    end
+
+    context "with :as => :decimal" do
+
+      it "should return cents formatted as a decimal" do
+        Money.new(1_00).to_s(:as => :decimal).should == "1.00"
+      end
+
+    end
+
+    context "with invalid :as" do
+
+      it "should raise an ArgumentError" do
+        lambda{
+          Money.new(1_00).to_s(:as => :foo)
+        }.should raise_error ArgumentError
+      end
+
+    end
+
+  end
+
 end

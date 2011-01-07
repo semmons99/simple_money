@@ -297,4 +297,38 @@ class Money
     end
   end
 
+  ##
+  # Returns cents formatted as a string, based on any options passed.
+  #
+  # @param [Hash] options Options used to format the string.
+  # @option options [Symbol] :as How cents should be returned (defaults to
+  #  self.class.default_as).
+  #
+  # @return [String]
+  #
+  # @raise [ArgumentError] Will raise an ArgumentError if :as is not valid.
+  #
+  # @example
+  #   n = Money.new(1_00, :as => :cents)
+  #   n.to_s                  #=> "100"
+  #   n.to_s(:as => :decimal) #=> "1.00"
+  def to_s(options = {})
+    options = {
+      :as => :cents
+    }.merge(options)
+
+    raise ArgumentError, "invalid `as`" unless (
+      self.class.valid_as? options[:as]
+    )
+
+    case options[:as]
+    when :cents
+      cents.to_s
+    when :decimal
+      unit, subunit = cents.divmod(100).map(&:to_s)
+      subunit = "0#{subunit}"[-2,2]
+      "#{unit}.#{subunit}"
+    end
+  end
+
 end

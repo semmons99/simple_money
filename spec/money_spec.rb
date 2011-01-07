@@ -327,14 +327,18 @@ describe "Money" do
 
     it "should divide a Money object by a numeric" do
       (1..100).to_a.combination(2).each do |(a,b)|
-        (Money.new(a) / b).cents.should == Money.round(a / BigDecimal(b.to_s))
-        (Money.new(a) / b.to_f).cents.should == Money.round(a / b.to_f)
+        (Money.new(a) / b).cents.should == (
+          a.divmod(BigDecimal(b.to_s))[0]
+        )
+        (Money.new(a) / b.to_f).cents.should == (
+          a.divmod(BigDecimal(b.to_f.to_s))[0]
+        )
       end
     end
 
     it "should added rounded fractional cents to the overflow bucket" do
       Money.new(5) / 2
-      Money.overflow.should == BigDecimal("0.5")
+      Money.overflow.should == BigDecimal("1")
     end
 
     it "should raise an error unless argument is a Money or Numeric" do

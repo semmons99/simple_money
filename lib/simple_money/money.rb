@@ -278,7 +278,12 @@ class Money
     when Money
       BigDecimal(self.cents.to_s) / BigDecimal(n.cents.to_s)
     when Numeric
-      Money.new(self.cents / BigDecimal(n.to_s), :as => :cents)
+      result, overflow = self.cents.divmod(BigDecimal(n.to_s))
+      self.class.instance_variable_set(
+        :@overflow,
+        self.class.overflow + overflow
+      )
+      Money.new(result, :as => :cents)
     else
       raise ArgumentError, "n must be a Money or Numeric"
     end

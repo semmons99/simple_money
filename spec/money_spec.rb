@@ -315,7 +315,7 @@ describe "Money" do
 
   end
 
-  describe ".divide" do
+  describe "#divide" do
 
     it "should divide two Money objects" do
       (1..100).to_a.combination(2).each do |(a,b)|

@@ -10,10 +10,12 @@ Usage:
     require 'simple_money'
 
     a = Money.new(1_00, :as => :cents)
-    a.cents        #=> 100
+    a.cents                 #=> 100
     b = a * 1.555
-    b.cents        #=> 156
-    Money.overflow #=> #<BigDecimal:... '-0.5E0',4(16)>
+    b.cents                 #=> 156
+    Money.overflow          #=> #<BigDecimal:... '-0.5E0',4(16)>
+    b.to_s                  #=> "100"
+    b.to_s(:as => :decimal) #=> "1.00"
 
 Copyright
 ---------

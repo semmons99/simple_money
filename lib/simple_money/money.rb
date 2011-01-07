@@ -202,9 +202,14 @@ class Money
 
     @cents = case options[:as]
              when :cents
-               Money.round(BigDecimal(n.to_s), rounding_method)
+               Money.round(
+                 BigDecimal(n.to_s), rounding_method
+               )
              when :decimal
-               Money.round(BigDecimal(n.to_s) * 100, rounding_method)
+               Money.round(
+                 BigDecimal(n.to_s) * BigDecimal("100"),
+                 rounding_method
+               )
              end
   end
 
@@ -255,7 +260,10 @@ class Money
   def *(n)
     raise ArgumentError, "n must be a Numeric" unless n.is_a? Numeric
 
-    Money.new(self.cents * BigDecimal(n.to_s), :as => :cents)
+    Money.new(
+      BigDecimal(self.cents.to_s) * BigDecimal(n.to_s),
+      :as => :cents
+    )
   end
 
   ##
@@ -278,7 +286,7 @@ class Money
     when Money
       BigDecimal(self.cents.to_s) / BigDecimal(n.cents.to_s)
     when Numeric
-      result, overflow = self.cents.divmod(BigDecimal(n.to_s))
+      result, overflow = BigDecimal(self.cents.to_s).divmod(BigDecimal(n.to_s))
       self.class.instance_variable_set(
         :@overflow,
         self.class.overflow + overflow

@@ -113,11 +113,28 @@ class Money
     attr_reader :overflow
 
     ##
+    # Update the overflow to the specified amount (converted to a BigDecimal
+    # object).
+    #
+    # @param [#to_s] n The value to set the overflow to.
+    #
+    # @return [BigDecimal]
+    #
+    # @example
+    #   Money.round(1.5)
+    #   Money.overflow #=> #<BigDecimal:... '-0.5E0',4(16)>
+    #   Money.overflow = 0
+    #   Money.overflow #=> #<BigDecimal:... '0.0',4(8)>
+    def overflow=(n)
+      @overflow = BigDecimal(n.to_s)
+    end
+
+    ##
     # Resets the overflow bucket to 0.
     #
     # @return [BigDecimal]
     def reset_overflow
-      @overflow = BigDecimal("0")
+      self.overflow = 0
     end
 
     ##
@@ -288,10 +305,7 @@ class Money
       BigDecimal(self.cents.to_s) / BigDecimal(n.cents.to_s)
     when Numeric
       result, overflow = BigDecimal(self.cents.to_s).divmod(BigDecimal(n.to_s))
-      self.class.instance_variable_set(
-        :@overflow,
-        self.class.overflow + overflow
-      )
+      self.class.overflow = self.class.overflow + overflow
       Money.new(result, :as => :cents)
     else
       raise ArgumentError, "n must be a Money or Numeric"

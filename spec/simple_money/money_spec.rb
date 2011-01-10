@@ -97,6 +97,16 @@ describe "Money" do
 
   end
 
+  describe ".overflow=" do
+
+    it "should set the overflow to the provided value" do
+      Money.overflow.should == BigDecimal("0")
+      Money.overflow = 5
+      Money.overflow.should == BigDecimal("5")
+    end
+
+  end
+
   describe ".reset_overflow" do
 
     it "should reset the overflow bucket to 0" do

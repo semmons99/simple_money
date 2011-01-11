@@ -28,6 +28,12 @@ describe "Currency" do
       Currency[:usd].should == USD
     end
 
+    it "should raise an ArgumentError if an invalid currency is requested" do
+      lambda{
+        Currency[:not_a_real_currency]
+      }.should raise_error ArgumentError
+    end
+
   end
 
 end

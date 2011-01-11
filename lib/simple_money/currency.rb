@@ -166,6 +166,20 @@ module Currency
     :zwd => { :priority => 100, :iso_code => "ZWD", :name => "Zimbabwean Dollar",                         :symbol => "$",             :subunit => "Cent",          :subunit_to_unit => 100, :decimal_places => 2,  :symbol_first => true, :html_entity => "$",        :decimal_mark => ".", :thousands_separator => ","},
   }
 
+  CurrencyStruct = Struct.new(
+    :priority,
+    :iso_code,
+    :name,
+    :symbol,
+    :subunit,
+    :subunit_to_unit,
+    :decimal_places,
+    :symbol_first,
+    :html_entity,
+    :decimal_mark,
+    :thousands_separator
+  )
+
   ##
   # Returns information pertaining to the requested currency.
   #
@@ -189,7 +203,15 @@ module Currency
   #                        :thousands_separator => ","
   #                      }
   def [](id)
-    CURRENCIES[id.to_s.downcase.to_sym]
+    @currency ||= {}
+    @currency[id] ||= lambda{|id|
+      h = CURRENCIES[id]
+      raise ArgumentError, "unknown CURRENCY `#{id}`" if h.nil?
+
+      c = CurrencyStruct.new
+      h.each{|k,v| c[k] = v}
+      c
+    }.call(id.to_s.downcase.to_sym)
   end
 
 end

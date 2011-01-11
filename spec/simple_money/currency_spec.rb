@@ -2,86 +2,30 @@ require 'simple_money/currency'
 
 describe "Currency" do
 
+  USD = Currency::CurrencyStruct.new(
+    1, "USD", "United States Dollar", "$", "Cent", 100, 2, true, "$", ".", ","
+  )
+
   describe "#[]" do
 
     it "should return a Hash pertaining to the requested currency id" do
-      Currency[:usd].should == {
-        :priority            => 1,
-        :iso_code            => "USD",
-        :name                => "United States Dollar",
-        :symbol              => "$",
-        :subunit             => "Cent",
-        :subunit_to_unit     => 100,
-        :decimal_places      => 2,
-        :symbol_first        => true,
-        :html_entity         => "$",
-        :decimal_mark        => ".",
-        :thousands_separator => ","
-      }
+      Currency[:usd].should == USD
     end
 
     it "should work with and uppercase string" do
-      Currency["USD"].should == {
-        :priority            => 1,
-        :iso_code            => "USD",
-        :name                => "United States Dollar",
-        :symbol              => "$",
-        :subunit             => "Cent",
-        :subunit_to_unit     => 100,
-        :decimal_places      => 2,
-        :symbol_first        => true,
-        :html_entity         => "$",
-        :decimal_mark        => ".",
-        :thousands_separator => ","
-      }
+      Currency["USD"].should == USD
     end
 
     it "should work with a lowercase string" do
-      Currency["usd"].should == {
-        :priority            => 1,
-        :iso_code            => "USD",
-        :name                => "United States Dollar",
-        :symbol              => "$",
-        :subunit             => "Cent",
-        :subunit_to_unit     => 100,
-        :decimal_places      => 2,
-        :symbol_first        => true,
-        :html_entity         => "$",
-        :decimal_mark        => ".",
-        :thousands_separator => ","
-      }
+      Currency["usd"].should == USD
     end
 
     it "should work with a uppercase symbol" do
-      Currency[:USD].should == {
-        :priority            => 1,
-        :iso_code            => "USD",
-        :name                => "United States Dollar",
-        :symbol              => "$",
-        :subunit             => "Cent",
-        :subunit_to_unit     => 100,
-        :decimal_places      => 2,
-        :symbol_first        => true,
-        :html_entity         => "$",
-        :decimal_mark        => ".",
-        :thousands_separator => ","
-      }
+      Currency[:USD].should == USD
     end
 
     it "should work with a lowercase symbol" do
-      Currency[:usd].should == {
-        :priority            => 1,
-        :iso_code            => "USD",
-        :name                => "United States Dollar",
-        :symbol              => "$",
-        :subunit             => "Cent",
-        :subunit_to_unit     => 100,
-        :decimal_places      => 2,
-        :symbol_first        => true,
-        :html_entity         => "$",
-        :decimal_mark        => ".",
-        :thousands_separator => ","
-      }
+      Currency[:usd].should == USD
     end
 
   end

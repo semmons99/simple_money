@@ -203,6 +203,8 @@ module Currency
   #                        :thousands_separator => ","
   #                      }
   def [](id)
+    return id if id.is_a? CurrencyStruct
+
     @currency ||= {}
     @currency[id] ||= lambda{|id|
       h = CURRENCIES[id]

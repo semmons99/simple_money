@@ -34,6 +34,10 @@ describe "Currency" do
       }.should raise_error ArgumentError
     end
 
+    it "should return the argument if it is already a CurrencyStruct" do
+      Currency[USD].should == USD
+    end
+
   end
 
 end

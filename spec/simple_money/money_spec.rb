@@ -293,6 +293,25 @@ describe "Money" do
       end
     end
 
+    context "with valid :rounding_method" do
+
+      it "should use the provided rounding method" do
+        n = Money.new(1_00, :rounding_method => :up)
+        n.rounding_method.should == :up
+      end
+
+    end
+
+    context "with invalid :rounding_method" do
+
+      it "should raise and ArgumentError" do
+        lambda{
+          Money.new(1_00, :rounding_method => :fake_rounding_method)
+        }.should raise_error ArgumentError
+      end
+
+    end
+
     context "with valid :currency" do
 
       context "with String" do

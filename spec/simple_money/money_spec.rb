@@ -382,7 +382,7 @@ describe "Money" do
 
   end
 
-  describe "#add" do
+  describe "#+" do
 
     it "should add two Money objects together" do
       (0..100).to_a.combination(2).each do |(a,b)|
@@ -404,7 +404,7 @@ describe "Money" do
 
   end
 
-  describe "#subtract" do
+  describe "#-" do
 
     it "should subtract two Money objects from each other" do
       (0..100).to_a.combination(2).each do |(a,b)|
@@ -424,7 +424,7 @@ describe "Money" do
 
   end
 
-  describe "#multiply" do
+  describe "#*" do
 
     it "should multiply a Money object by a Numeric" do
       (0..100).to_a.combination(2).each do |(a,b)|
@@ -449,7 +449,7 @@ describe "Money" do
 
   end
 
-  describe "#divide" do
+  describe "#/" do
 
     it "should divide two Money objects" do
       (1..100).to_a.combination(2).each do |(a,b)|

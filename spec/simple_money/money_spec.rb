@@ -320,6 +320,49 @@ describe "Money" do
 
       end
 
+      it "should respect a currency.subunit_to_unit of 10" do
+        Money.new(
+          1.9,
+          :as => :decimal,
+          :currency => :cny
+        ).cents.should == 19
+      end
+
+      it "should respect a currency.subunit_to_unit of 100" do
+        Money.new(
+          1.99,
+          :as => :decimal,
+          :currency => :usd
+        ).cents.should == 199
+      end
+
+
+      it "should respect a currency.subunit_to_unit of 1000" do
+        Money.new(
+          1.999,
+          :as => :decimal,
+          :currency => :bhd
+        ).cents.should == 1999
+      end
+
+
+      it "should respect a currency.subunit_to_unit of 1" do
+        Money.new(
+          1,
+          :as => :decimal,
+          :currency => :clp
+        ).cents.should == 1
+      end
+
+
+      it "should respect a currency.subunit_to_unit of 5" do
+        Money.new(
+          1.4,
+          :as => :decimal,
+          :currency => :mga
+        ).cents.should == 9
+      end
+
     end
 
     context "with invalid :currency" do

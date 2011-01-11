@@ -253,10 +253,28 @@ class Money
                  BigDecimal(n.to_s), rounding_method
                )
              when :decimal
-               Money.round(
-                 BigDecimal(n.to_s) * BigDecimal("100"),
-                 rounding_method
-               )
+               case currency.subunit_to_unit
+               when 10, 100, 1000
+                 Money.round(
+                   (
+                     BigDecimal(n.to_s) *
+                     BigDecimal(currency.subunit_to_unit.to_s)
+                   ),
+                   rounding_method
+                 )
+               when 1
+                 Money.round(
+                   BigDecimal(n.to_s), rounding_method
+                 )
+               when 5
+                 unit = BigDecimal(n.to_s).floor * BigDecimal("5")
+                 subunit = (
+                   (BigDecimal(n.to_s) % BigDecimal("1")) * BigDecimal("10")
+                 )
+                 Money.round(unit + subunit)
+               else
+                 raise Exception, "creation of Money objects with subunit_to_unit = `#{currency.subunit_to_unit}` is not implmented"
+               end
              end
   end
 

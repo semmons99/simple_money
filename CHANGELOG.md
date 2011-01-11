@@ -1,3 +1,11 @@
+SimpleMoney 0.2.0
+=================
+
+Features
+--------
+- Money is now Currency aware
+- All existing methods respect currency
+
 SimpleMoney 0.1.1
 =================
 

@@ -401,8 +401,15 @@ class Money
     when :cents
       cents.to_s
     when :decimal
-      unit, subunit = cents.divmod(100).map(&:to_s)
-      subunit = "0#{subunit}"[-2,2]
+      if currency.subunit_to_unit == 1
+        return cents.to_s
+      end
+      unit, subunit = cents.divmod(currency.subunit_to_unit).map(&:to_s)
+      subunit = (("0" * currency.decimal_places) + subunit)
+      subunit = subunit[
+        (-1 * currency.decimal_places),
+        currency.decimal_places
+      ]
       "#{unit}.#{subunit}"
     end
   end

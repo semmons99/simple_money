@@ -526,6 +526,46 @@ describe "Money" do
         Money.new(1_00).to_s(:as => :decimal).should == "1.00"
       end
 
+      it "should work with a subunit_to_unit of 1" do
+        Money.new(
+          1,
+          :as => :decimal,
+          :currency => :clp
+        ).to_s(:as => :decimal).should == "1"
+      end
+
+      it "should work with a subunit_to_unit of 5" do
+        Money.new(
+          1.4,
+          :as => :decimal,
+          :currency => :mga
+        ).to_s(:as => :decimal).should == "1.4"
+      end
+
+      it "should work with a subunit_to_unit of 10" do
+        Money.new(
+          1.9,
+          :as => :decimal,
+          :currency => :cny
+        ).to_s(:as => :decimal).should == "1.9"
+      end
+
+      it "should work with a subunit_to_unit of 100" do
+        Money.new(
+          1.99,
+          :as => :decimal,
+          :currency => :usd
+        ).to_s(:as => :decimal).should == "1.99"
+      end
+
+      it "should work with a subunit_to_unit of 100" do
+        Money.new(
+          1.999,
+          :as => :decimal,
+          :currency => :bhd
+        ).to_s(:as => :decimal).should == "1.999"
+      end
+
     end
 
     context "with invalid :as" do

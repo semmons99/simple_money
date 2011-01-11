@@ -359,6 +359,10 @@ class Money
   def /(n)
     case n
     when Money
+      raise ArgumentError, "n is an incompatible currency" unless (
+        n.currency == currency
+      )
+
       BigDecimal(self.cents.to_s) / BigDecimal(n.cents.to_s)
     when Numeric
       result, overflow = BigDecimal(self.cents.to_s).divmod(BigDecimal(n.to_s))

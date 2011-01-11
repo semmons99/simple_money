@@ -293,6 +293,50 @@ describe "Money" do
       end
     end
 
+    context "with valid :currency" do
+
+      context "with String" do
+
+        it "should use the provided currency to create the object" do
+          Money.new(1_00, :currency => "EUR").currency.should == Currency[:eur]
+        end
+
+      end
+
+      context "with Symbol" do
+
+        it "should use the provided currency to create the object" do
+          Money.new(1_00, :currency => :eur).currency.should == Currency[:eur]
+        end
+
+      end
+
+      context "with CurrencyStruct" do
+
+        it "should use the provided currency to create the object" do
+          c = Currency[:eur]
+          Money.new(1_00, :currency => c).currency.should == Currency[:eur]
+        end
+
+      end
+
+    end
+
+    context "with invalid :currency" do
+
+      it "should raise an ArgumentError" do
+        lambda{
+          Money.new(1_00, :currency => :not_a_real_currency)
+        }.should raise_error ArgumentError
+      end
+
+    end
+
+    it "should use the default :currency" do
+      Money.default_currency = :eur
+      Money.new(1_00).currency.should == Currency[:eur]
+    end
+
   end
 
   describe "#add" do

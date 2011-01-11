@@ -202,6 +202,11 @@ class Money
   attr_reader :rounding_method
 
   ##
+  # @return [Currency::CurrencyStruct] The currency representation the object
+  # was created using.
+  attr_reader :currency
+
+  ##
   # Creates a new Money object. If as is set to :cents, n will be coerced to a
   # Fixnum. If as is set to :decimal, n will be coerced to a BigDecimal.
   #
@@ -211,6 +216,8 @@ class Money
   #  self.class.default_as).
   # @option options [Symbol] :rounding_method How any calculations resulting in
   #  fractions of a cent should be rounded.
+  # @options options [Currency::CurrencyStruct,#to_s] :currency The currency
+  #  representation the object should be created using.
   #
   # @raise [ArgumentError] Will raise an ArgumentError if as is not valid.
   #
@@ -224,9 +231,12 @@ class Money
   #   Money.new(1.99, :as => :decimal) #=> #<Money:... @cents: 199>
   def initialize(n = 0, options = {})
     options = {
+      :currency => self.class.default_currency,
       :rounding_method => self.class.default_rounding_method,
       :as => self.class.default_as
     }.merge(options)
+
+    @currency = Currency[options[:currency]]
 
     raise ArgumentError, "invalid `rounding_method`" unless (
       self.class.valid_rounding_method? options[:rounding_method]

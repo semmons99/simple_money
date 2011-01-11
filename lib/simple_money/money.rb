@@ -1,4 +1,5 @@
 require 'bigdecimal'
+require 'simple_money/currency'
 
 ##
 # Used to work with financial calculations. Tries to avoid the pitfalls of
@@ -108,6 +109,25 @@ class Money
     end
 
     ##
+    # The default currency used to create a new Money object (default to :usd).
+    attr_reader :default_currency
+
+    ##
+    # Set the default currency used to create a new Money object.
+    #
+    # @param [Currency::CurrencyStruct,#to_s] id The CurrencyStruct or id of
+    #  the desired default currency.
+    #
+    # @return [Currency::CurrencyStruct]
+    #
+    # @example
+    #   Money.default_currency = :usd
+    #   Money.default_currency #=> #<CurrencyStruct:... id: :usd, ...>
+    def default_currency=(id)
+      @default_currency = Currency[id]
+    end
+
+    ##
     # @return [BigDecimal] The factional cents left over from any transactions
     #  that overflowed.
     attr_reader :overflow
@@ -169,6 +189,7 @@ class Money
   end
   @default_as = :cents
   @default_rounding_method = :bankers
+  @default_currency = :usd
   @overflow = BigDecimal("0")
 
   ##

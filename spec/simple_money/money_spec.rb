@@ -6,6 +6,7 @@ describe "Money" do
   after :each do
     Money.default_as = :cents
     Money.default_rounding_method = :bankers
+    Money.default_currency = :usd
     Money.reset_overflow
   end
 
@@ -83,6 +84,30 @@ describe "Money" do
 
     it "should return false if rounding method is invalid" do
       Money.valid_rounding_method?(:foo).should == false
+    end
+
+  end
+
+  describe ".default_currency" do
+
+    it "should return the default currency used" do
+      Money.default_currency.should == Currency[:usd]
+    end
+
+  end
+
+  describe ".default_currency=" do
+
+    it "should set the default currency used" do
+      Money.default_currency.should == Currency[:usd]
+      Money.default_currency = :eur
+      Money.default_currency.should == Currency[:eur]
+    end
+
+    it "should raise and ArgumentError unless the currency is valid" do
+      lambda{
+        Money.default_currency = :not_a_real_currency
+      }.should raise_error ArgumentError
     end
 
   end

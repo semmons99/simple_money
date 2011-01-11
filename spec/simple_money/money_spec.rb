@@ -396,6 +396,12 @@ describe "Money" do
       }.should raise_error ArgumentError
     end
 
+    it "should raise an error if the currency isn't the same" do
+      lambda{
+        Money.new(1_00, :currency => :usd) + Money.new(1_00, :currency => :eur)
+      }.should raise_error ArgumentError
+    end
+
   end
 
   describe "#subtract" do

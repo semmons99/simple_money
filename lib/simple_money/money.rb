@@ -292,6 +292,10 @@ class Money
   #   Money.new(1) + Money.new(2) #=> #<Money:... @cents: 3>
   def +(n)
     raise ArgumentError, "n must be a Money" unless n.is_a? Money
+    raise ArgumentError, "n is an incompatible currency" unless (
+      n.currency == currency
+    )
+
     Money.new(self.cents + n.cents, :as => :cents)
   end
 

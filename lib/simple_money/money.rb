@@ -391,6 +391,42 @@ class Money
   end
 
   ##
+  # Modulo self by a Money/Numeric; return the results as a new Numeric/Money.
+  #
+  # @param [Money,Numeric] n The object to modulo. If n is Numeric, it will be
+  #  coerced to a BigDecimal before any calculations are done.
+  #
+  # @return [Numeric,Money]
+  #
+  # @raise [ArgumentError] Will raise an ArgumentError unless n is a Money
+  #  object or Numeric.
+  # @raise [ArgumentError] Will raise an ArgumentError if n is an incompatible
+  #  currency.
+  #
+  # @example
+  #   Money.new(10) % Money.new(5) #=> 2
+  #   Money.new(10) % 5            #=> #<Money:... @cents: 2>
+  def %(n)
+    case n
+    when Money
+      raise ArgumentError, "n is an incompatible currency" unless (
+        n.currency == currency
+      )
+
+      BigDecimal(self.cents.to_s) % BigDecimal(n.cents.to_s)
+    when Numeric
+      Money.new(
+        BigDecimal(self.cents.to_s) % BigDecimal(n.to_s),
+        :as => :cents,
+        :rounding_method => rounding_method,
+        :currency => currency
+      )
+    else
+      raise ArgumentError, "n must be a Money or Numeric"
+    end
+  end
+
+  ##
   # Returns cents formatted as a string, based on any options passed.
   #
   # @param [Hash] options The options used to format the string.

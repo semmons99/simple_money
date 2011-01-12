@@ -549,6 +549,49 @@ describe "Money" do
     end
 
   end
+  
+  describe "#%" do
+
+    it "should modulo two Money objects" do
+      (1..100).to_a.combination(2).each do |(a,b)|
+        (Money.new(a) % Money.new(b)).should == (
+          BigDecimal(a.to_s) % BigDecimal(b.to_s)
+        )
+      end
+    end
+
+    it "should modulo a Money object by a numeric" do
+      (1..100).to_a.combination(2).each do |(a,b)|
+        (Money.new(a) % b).cents.should == (
+          a % BigDecimal(b.to_s)
+        )
+        (Money.new(a) % b.to_f).cents.should == (
+          a % BigDecimal(b.to_f.to_s)
+        )
+      end
+    end
+
+    it "should raise an error unless argument is a Money or Numeric" do
+      lambda{Money.new % :foo}.should raise_error ArgumentError
+    end
+
+    it "should raise an error if the currency isn't the same" do
+      lambda{
+        Money.new(1_00, :currency => :usd) % Money.new(1_00, :currency => :eur)
+      }.should raise_error ArgumentError
+    end
+
+    it "should use the base objects rounding method" do
+      a = Money.new(1_00, :rounding_method => :up)
+      (a % 2).rounding_method.should == :up
+    end
+
+    it "should use the base objects currency" do
+      a = Money.new(1_00, :currency => :eur)
+      (a % 2).currency.should == Currency[:eur]
+    end
+
+  end
 
   describe "#to_s" do
 

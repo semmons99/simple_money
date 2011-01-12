@@ -629,6 +629,37 @@ describe "Money" do
 
   end
 
+  describe "#==" do
+
+    it "should return true when self == n" do
+      a = Money.new(1_00)
+      b = Money.new(1_00)
+      (a == b).should == true
+    end
+
+    it "should return false when self != n" do
+      a = Money.new(1_00)
+      b = Money.new(2_00)
+      (a == b).should == false
+    end
+
+    it "should raise an ArgumentError unless n is a Money object" do
+      lambda{
+        a = Money.new(1_00)
+        a == :foo
+      }.should raise_error ArgumentError
+    end
+
+    it "should raise an ArgumentError if currency of n isn't the same" do
+      lambda{
+        a = Money.new(1_00, :currency => :usd)
+        b = Money.new(2_00, :currency => :eur)
+        a == b
+      }.should raise_error ArgumentError
+    end
+
+  end
+
   describe "#to_s" do
 
     it "should return cents formatted as a string" do

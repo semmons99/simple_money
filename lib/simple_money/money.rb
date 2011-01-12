@@ -459,6 +459,28 @@ class Money
   end
 
   ##
+  # Compare self to n. When self == n, return true, otherwise false.
+  #
+  # @param [Money] n The object to compare with.
+  #
+  # @raise [ArgumentError] Will raise an ArgumentError unless n is a Money
+  #  object or Numeric.
+  # @raise [ArgumentError] Will raise an ArgumentError if n is an incompatible
+  #  currency.
+  #
+  # @example
+  #   Money.new(1_00) == Money.new(2_00) #=> false
+  #   Money.new(2_00) == Money.new(2_00) #=> true
+  def ==(n)
+    raise ArgumentError, "n must be a Money" unless n.is_a? Money
+    raise ArgumentError, "n is an incompatible currency" unless (
+      n.currency == currency
+    )
+
+    self.cents == n.cents
+  end
+
+  ##
   # Returns cents formatted as a string, based on any options passed.
   #
   # @param [Hash] options The options used to format the string.

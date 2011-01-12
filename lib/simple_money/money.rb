@@ -296,7 +296,12 @@ class Money
       n.currency == currency
     )
 
-    Money.new(self.cents + n.cents, :as => :cents)
+    Money.new(
+      self.cents + n.cents,
+      :as => :cents,
+      :rounding_method => rounding_method,
+      :currency => currency
+    )
   end
 
   ##
@@ -317,7 +322,12 @@ class Money
       n.currency == currency
     )
 
-    Money.new(self.cents - n.cents, :as => :cents)
+    Money.new(
+      self.cents - n.cents,
+      :as => :cents,
+      :rounding_method => rounding_method,
+      :currency => currency
+    )
   end
 
   ##
@@ -338,7 +348,9 @@ class Money
 
     Money.new(
       BigDecimal(self.cents.to_s) * BigDecimal(n.to_s),
-      :as => :cents
+      :as => :cents,
+      :rounding_method => rounding_method,
+      :currency => currency
     )
   end
 
@@ -367,7 +379,12 @@ class Money
     when Numeric
       result, overflow = BigDecimal(self.cents.to_s).divmod(BigDecimal(n.to_s))
       self.class.overflow = self.class.overflow + overflow
-      Money.new(result, :as => :cents)
+      Money.new(
+        result,
+        :as => :cents,
+        :rounding_method => rounding_method,
+        :currency => currency
+      )
     else
       raise ArgumentError, "n must be a Money or Numeric"
     end

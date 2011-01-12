@@ -421,6 +421,18 @@ describe "Money" do
       }.should raise_error ArgumentError
     end
 
+    it "should use the base objects rounding method" do
+      a = Money.new(1_00, :rounding_method => :up)
+      b = Money.new(1_00, :rounding_method => :up)
+      (a + b).rounding_method.should == :up
+    end
+
+    it "should use the base objects currency" do
+      a = Money.new(1_00, :currency => :eur)
+      b = Money.new(1_00, :currency => :eur)
+      (a + b).currency.should == Currency[:eur]
+    end
+
   end
 
   describe "#-" do
@@ -439,6 +451,18 @@ describe "Money" do
       lambda{
         Money.new(1_00, :currency => :usd) - Money.new(1_00, :currency => :eur)
       }.should raise_error ArgumentError
+    end
+
+    it "should use the base objects rounding method" do
+      a = Money.new(1_00, :rounding_method => :up)
+      b = Money.new(1_00, :rounding_method => :up)
+      (a - b).rounding_method.should == :up
+    end
+
+    it "should use the base objects currency" do
+      a = Money.new(1_00, :currency => :eur)
+      b = Money.new(1_00, :currency => :eur)
+      (a - b).currency.should == Currency[:eur]
     end
 
   end
@@ -464,6 +488,16 @@ describe "Money" do
 
     it "should raise an error unless argument is a Numeric" do
       lambda{Money.new * Money.new}.should raise_error ArgumentError
+    end
+
+    it "should use the base objects rounding method" do
+      a = Money.new(1_00, :rounding_method => :up)
+      (a * 2).rounding_method.should == :up
+    end
+
+    it "should use the base objects currency" do
+      a = Money.new(1_00, :currency => :eur)
+      (a * 2).currency.should == Currency[:eur]
     end
 
   end
@@ -502,6 +536,16 @@ describe "Money" do
       lambda{
         Money.new(1_00, :currency => :usd) / Money.new(1_00, :currency => :eur)
       }.should raise_error ArgumentError
+    end
+
+    it "should use the base objects rounding method" do
+      a = Money.new(1_00, :rounding_method => :up)
+      (a / 2).rounding_method.should == :up
+    end
+
+    it "should use the base objects currency" do
+      a = Money.new(1_00, :currency => :eur)
+      (a / 2).currency.should == Currency[:eur]
     end
 
   end

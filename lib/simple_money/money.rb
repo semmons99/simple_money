@@ -481,6 +481,22 @@ class Money
   end
 
   ##
+  # Return a new Money object using the absolute value of cents.
+  #
+  # @return [Money]
+  #
+  # @example
+  #   Money.new(-1_00).abs #=> #<Money:... cents: 100>
+  def abs
+    Money.new(
+      self.cents.abs,
+      :as => :cents,
+      :rounding_method => rounding_method,
+      :currency => currency
+    )
+  end
+
+  ##
   # Returns cents formatted as a string, based on any options passed.
   #
   # @param [Hash] options The options used to format the string.

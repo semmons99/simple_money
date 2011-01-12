@@ -660,6 +660,28 @@ describe "Money" do
 
   end
 
+  describe "abs" do
+
+    it "should return the a new Money object using cents.abs" do
+      Money.new(-1_00).abs.should == Money.new(1_00)
+    end
+
+    it "should use the base objects rounding method" do
+      Money.new(
+        -1_00,
+        :rounding_method => :up
+      ).abs.rounding_method.should == :up
+    end
+
+    it "should use the base objects currency" do
+      Money.new(
+        -1_00,
+        :currency => :eur
+      ).abs.currency.should == Currency[:eur]
+    end
+
+  end
+
   describe "#to_s" do
 
     it "should return cents formatted as a string" do

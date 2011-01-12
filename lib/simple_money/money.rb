@@ -434,6 +434,44 @@ class Money
     end
   end
 
+  def divmod(n)
+    case n
+    when Money
+      raise ArgumentError, "n is an incompatible currency" unless (
+        n.currency == currency
+      )
+
+      a, b = BigDecimal(self.cents.to_s).divmod(BigDecimal(n.cents.to_s))
+      [
+        a,
+        Money.new(
+          b,
+          :as => :cents,
+          :rounding_method => rounding_method,
+          :currency => currency
+        )
+      ]
+    when Numeric
+      a, b = BigDecimal(self.cents.to_s).divmod(BigDecimal(n.to_s))
+      [
+        Money.new(
+          a,
+          :as => :cents,
+          :rounding_method => rounding_method,
+          :currency => currency
+        ),
+        Money.new(
+          b,
+          :as => :cents,
+          :rounding_method => rounding_method,
+          :currency => currency
+        )
+      ]
+    else
+      raise ArgumentError, "n must be a Money or Numeric"
+    end
+  end
+
   ##
   # Compare self to n. When self < n, return -1. When self > n, return 1. When
   # self == n, return 0.

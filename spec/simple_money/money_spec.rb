@@ -592,6 +592,87 @@ describe "Money" do
     end
 
   end
+
+  describe "#divmod" do
+
+    context "when n is a Money object" do
+
+      it "should return an appropriate array of values" do
+        Money.new(5).divmod(Money.new(2)).should == [
+          BigDecimal("2"), Money.new(1)
+        ]
+      end
+
+      it "should raise an ArgumentError if n is an incompatible currency" do
+        lambda{
+          Money.new(5_00, :currency => :usd).divmod(
+            Money.new(2_00, :currency => :eur)
+          )
+        }.should raise_error ArgumentError
+      end
+
+      it "should use the base objects rounding method" do
+        Money.new(
+          5,
+          :rounding_method => :up
+        ).divmod(Money.new(2))[1].rounding_method.should == :up
+      end
+
+      it "should use the base objects currency" do
+        Money.new(
+          5,
+          :currency => :eur
+        ).divmod(
+          Money.new(
+            2,
+            :currency => :eur
+          )
+        )[1].currency.should == Currency[:eur]
+      end
+
+    end
+
+    context "when n is a Numeric" do
+
+      it "should return an appropriate array of values" do
+        Money.new(5).divmod(2).should == [
+          Money.new(2), Money.new(1)
+        ]
+      end
+
+      it "should add to overflow when necessary" do
+        Money.overflow.should == BigDecimal("0")
+        Money.new(5).divmod(2.1)
+        Money.overflow.should == BigDecimal("-0.2")
+      end
+
+      it "shoud use the base objects rounding method" do
+        n = Money.new(
+          5,
+          :rounding_method => :up
+        ).divmod(2)
+        n[0].rounding_method.should == :up
+        n[1].rounding_method.should == :up
+      end
+
+      it "should use the base objects currency" do
+        n = Money.new(
+          5,
+          :currency => :eur
+        ).divmod(2)
+        n[0].currency.should == Currency[:eur]
+        n[1].currency.should == Currency[:eur]
+      end
+
+    end
+
+    it "should raise an ArgumentError unless n is a Money/Numeric" do
+      lambda{
+        Money.new(5).divmod(:foo)
+      }.should raise_error ArgumentError
+    end
+
+  end
   
   describe "#<=>" do
 

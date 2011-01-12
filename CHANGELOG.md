@@ -1,3 +1,16 @@
+SimpleMoney 0.2.1
+=================
+
+Features
+--------
+- Added #%, #<=>, #==, #abs and #divmod
+- Cleanup/Enhanced documentation
+
+Bug fixes
+---------
+- Update all calculations to respect options set on object (rounding method,
+  currency, etc) when return a new object as a result of the calculation
+
 SimpleMoney 0.2.0
 =================
 

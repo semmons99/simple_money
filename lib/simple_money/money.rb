@@ -220,6 +220,8 @@ class Money
   #  representation the object should be created using.
   #
   # @raise [ArgumentError] Will raise an ArgumentError if as is not valid.
+  # @raise [ArgumentError] Will raise an ArgumentError if rounding method is
+  #  not valid.
   #
   # @example
   #   Money.new                        #=> #<Money:... @cents: 0>
@@ -287,6 +289,8 @@ class Money
   #
   # @raise [ArgumentError] Will raise an ArgumentError unless n is a Money
   #  object.
+  # @raise [ArgumentError] Will raise an ArgumentError if currency of n is
+  #  incompatible.
   #
   # @example
   #   Money.new(1) + Money.new(2) #=> #<Money:... @cents: 3>
@@ -313,6 +317,8 @@ class Money
   #
   # @raise [ArgumentError] Will raise an ArgumentError unless n is a Money
   #  object.
+  # @raise [ArgumentError] Will raise an ArgumentError if currency of n is
+  #  incompatible.
   #
   # @example
   #   Money.new(2) - Money.new(1) #=> #<Money:... @cents: 1>
@@ -364,10 +370,12 @@ class Money
   #
   # @raise [ArgumentError] Will raise an ArgumentError unless n is a Money
   #  object or Numeric.
+  # @raise [ArgumentError] Will raise an ArgumentError if currency of n is
+  #  incompatible.
   #
   # @example
   #   Money.new(10) / Money.new(5) #=> 2
-  #   Money.new(10) /              #=> #<Money:... @cents: 2>
+  #   Money.new(10) / 5            #=> #<Money:... @cents: 2>
   def /(n)
     case n
     when Money

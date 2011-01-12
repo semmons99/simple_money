@@ -6,7 +6,7 @@ Gem::Specification.new do |s|
   s.email       = "semmons99@gmail.com"
   s.homepage    = "http://github.com/semmons99/simple_money"
   s.summary     = "Library to work with money/currency."
-  s.description = "This gem is intended for working with financial calculations where you need highly accurate results."
+  s.description = "This gem is intended for working with financial calculations (money/currency) where you need highly accurate results."
 
   s.required_ruby_version     = ">= 1.8.7"
   s.required_rubygems_version = ">= 1.3.7"

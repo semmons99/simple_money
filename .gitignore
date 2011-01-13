@@ -13,6 +13,9 @@ tmtags
 ## VIM
 *.swp
 
+## CTAGS
+tags
+
 ## PROJECT::GENERAL
 coverage
 rdoc

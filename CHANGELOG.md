@@ -1,3 +1,10 @@
+SimpleMoney 0.3.0
+=================
+
+Features
+--------
+- Updates to work with gem-testers.org
+
 SimpleMoney 0.2.1
 =================
 

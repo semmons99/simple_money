@@ -20,6 +20,7 @@ tags
 coverage
 rdoc
 pkg
+*.rbc
 
 ## PROJECT::SPECIFIC
 .yardoc
